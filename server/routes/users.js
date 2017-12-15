@@ -50,18 +50,16 @@ router.post('/register', function(req, res){
 // Login Process
 router.post('/login', function(req, res, next){
   console.log(req.body);
-  
+
   passport.authenticate('local', {
     successRedirect:'/dashboard',
-    failureRedirect:'/users/login',
-    failureFlash: true
+    failureRedirect:'/users/login'
   })(req, res, next);
 });
 
 // logout
 router.get('/logout', function(req, res){
   req.logout();
-  req.flash('success', 'You are logged out');
   res.redirect('/users/login');
 });
 
