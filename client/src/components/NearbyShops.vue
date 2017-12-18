@@ -1,4 +1,5 @@
 <template>
+  <v-container grid-list-md text-xs-center>
   <v-layout row wrap>
       <v-flex xs12 sm6 md4>
         <v-card>
@@ -22,6 +23,7 @@
         </v-card>
       </v-flex>
     </v-layout>
+  </v-container>
 </template>
 
 
