@@ -9,6 +9,7 @@ let User = require('../models/user');
 
 // Register Proccess
 router.post('/register', function(req, res){
+  console.log('received');
   const email = req.body.email;
   const password = req.body.password;
   const password2 = req.body.repassword;
