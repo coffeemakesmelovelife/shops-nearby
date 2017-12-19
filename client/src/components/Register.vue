@@ -21,7 +21,8 @@
                       counter
                       required
                     ></v-text-field>
-    <v-btn @click="submit" :disabled="!valid">Submit</v-btn>
+                    <p class="err">{{error}}</p>
+    <v-btn @click="register" :disabled="!valid">Submit</v-btn>
     <v-btn @click="clear">clear</v-btn>
   </v-form>
 </v-flex>
@@ -32,6 +33,7 @@
 import AuthService from '@/services/AuthService'
   export default {
     data: () => ({
+      error: '',
       valid: true,
       email: '',
       emailRules: [
@@ -53,13 +55,19 @@ import AuthService from '@/services/AuthService'
       e2: true
     }),
     methods: {
-      submit () {
+      async register () {
         if (this.$refs.form.validate()) {
-          AuthService.register({
+          const response = await AuthService.register({
             email: this.email,
             password: this.password,
             repassword: this.repassword
           })
+          if (response.data.error) {
+            console.log(response.data.error);
+            this.error = response.data.error
+          } else if (response.data.success) {
+            this.$router.push({name:'login'})
+          }
         }
       },
       clear () {
@@ -70,5 +78,7 @@ import AuthService from '@/services/AuthService'
 </script>
 
 <style scoped>
-
+  .err{
+    color: red
+  }
 </style>

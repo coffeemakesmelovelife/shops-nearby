@@ -8,6 +8,10 @@ router.get('/', ensureAuthenticated, function(req, res){
   //here the magic will happen
 })
 
+router.get('/preferred-shops', ensureAuthenticated, function(req, res){
+  //here the magic will happen
+})
+
 // Access Control
 function ensureAuthenticated(req, res, next){
   if(req.isAuthenticated()){

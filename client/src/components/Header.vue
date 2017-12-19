@@ -4,11 +4,11 @@
     <v-toolbar-title class="white--text">Shops Nearby</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
-      <v-btn flat dark @click="navigateTo({name: 'nearby-shops'})">Nearby Shops</v-btn>
-      <v-btn flat dark>My Preferred Shops</v-btn>
-      <v-btn flat dark @click="navigateTo({name: 'login'})">Login</v-btn>
-      <v-btn flat dark @click="navigateTo({name: 'register'})">Register</v-btn>
-      <v-btn flat dark>Logout</v-btn>
+      <v-btn v-if="$store.state.isLoggedIn" flat dark @click="navigateTo({name: 'nearby-shops'})">Nearby Shops</v-btn>
+      <v-btn v-if="$store.state.isLoggedIn" flat dark @click="navigateTo({name: 'nearby-shops'})">My Preferred Shops</v-btn>
+      <v-btn v-if="!$store.state.isLoggedIn" flat dark @click="navigateTo({name: 'login'})">Login</v-btn>
+      <v-btn v-if="!$store.state.isLoggedIn" flat dark @click="navigateTo({name: 'register'})">Register</v-btn>
+      <v-btn v-if="$store.state.isLoggedIn" flat dark @click="logout()">Logout</v-btn>
     </v-toolbar-items>
   </v-toolbar>
 </template>
@@ -18,6 +18,19 @@
     methods: {
       navigateTo(route){
         this.$router.push(route)
+      },
+      /*
+      data: function(){
+        return {
+          get isLoggedIn(){
+            return localStorage.getItem('isLoggedIn')
+          }
+        }
+      },
+      */
+      logout(){
+        this.$store.dispatch('logout')
+        this.$router.push({name: 'login'})
       }
     }
   }

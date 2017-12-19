@@ -12,7 +12,7 @@
               counter
               required
             ></v-text-field>
-    <v-btn @click="submit" :disabled="!valid">Submit</v-btn>
+    <v-btn @click="login" :disabled="!valid">Submit</v-btn>
     <v-btn @click="clear">clear</v-btn>
   </v-form>
 </v-flex>
@@ -37,12 +37,16 @@ import AuthService from '@/services/AuthService'
       e1: true
     }),
     methods: {
-      submit () {
+      async login () {
         if (this.$refs.form.validate()) {
-          AuthService.login({
+          const response = await AuthService.login({
             email: this.email,
             password: this.password
           })
+          if(response.data.user){
+            this.$store.dispatch('setUser', response.data.user)
+            this.$router.push({name: 'nearby-shops'})
+          }
         }
       },
       clear () {

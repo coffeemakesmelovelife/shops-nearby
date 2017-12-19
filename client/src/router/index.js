@@ -6,7 +6,7 @@ import NearbyShops from '@/components/NearbyShops'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   routes: [
     {
@@ -22,7 +22,23 @@ export default new Router({
     {
       path: '/nearby-shops',
       name: 'nearby-shops',
-      component: NearbyShops
+      component: NearbyShops,
+      meta: {requiresAuth: true}
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const isAuth = localStorage.getItem('isLoggedIn')
+    console.log(isAuth);
+    if (isAuth == true) {
+      next()
+    } else {
+      next({name: 'login'})
+    }
+  }
+  next()
+})
+
+export default router

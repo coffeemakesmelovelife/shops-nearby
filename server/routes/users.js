@@ -23,6 +23,7 @@ router.post('/register', function(req, res){
 
   if(errors){
     console.log(errors);
+    return res.send({error: errors})
   } else {
     let newUser = new User({
       email:email,
@@ -38,10 +39,11 @@ router.post('/register', function(req, res){
         newUser.save(function(err){
           if(err){
             console.log(err);
+            return res.send({error: 'An error occured, please try again.'})
             return;
           } else {
-            //success
-          }
+            return res.send({success: 'Registered successfully.'})
+            }
         });
       });
     });
@@ -49,13 +51,9 @@ router.post('/register', function(req, res){
 });
 
 // Login Process
-router.post('/login', function(req, res, next){
-  console.log(req.body);
+router.post('/login', passport.authenticate('local'), function(req, res){
+  res.status(200).json({user: req.user.email});
 
-  passport.authenticate('local', {
-    successRedirect:'/dashboard',
-    failureRedirect:'/users/login'
-  })(req, res, next);
 });
 
 // logout
