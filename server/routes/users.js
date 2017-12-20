@@ -52,9 +52,31 @@ router.post('/register', function(req, res){
 
 // Login Process
 router.post('/login', passport.authenticate('local'), function(req, res){
-  res.status(200).json({user: req.user.email});
-
+  res.status(200).json({user: req.user._id});
 });
+
+// Like a shop
+router.post('/like', function(req, res){
+  console.log(req.body)
+  User.findOneAndUpdate({_id: req.body.userId}, {$push: {preferredShops: req.body.shopId}}, function(err, user){
+    if(err){
+      console.log(err);
+    }
+    console.log(user);
+
+  })
+})
+
+// Un-like a shop
+router.post('/remove-liked', function(req, res){
+  console.log(req.body);
+  User.update({_id: req.body.userId}, { $pullAll: {preferredShops: [req.body.shopId]}}, function(err, user){
+    if (err) {
+      console.log(err);
+    }
+    console.log(user);
+  })
+})
 
 // logout
 router.get('/logout', function(req, res){

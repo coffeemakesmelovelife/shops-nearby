@@ -7,6 +7,7 @@ export default new Vuex.Store({
   strict: true,
   state: {
     user: null,
+    userLoc: null,
     isLoggedIn: false
   },
   mutations: {
@@ -15,8 +16,12 @@ export default new Vuex.Store({
       state.isLoggedIn = true
       localStorage.setItem('isLoggedIn', true)
     },
+    setLoc(state, userLoc){
+      state.userLoc = userLoc
+    },
     logout(state){
-      state.user = null
+      state.user = null,
+      state.userLoc = null,
       state.isLoggedIn = false
       localStorage.setItem('isLoggedIn', false)
     }
@@ -24,6 +29,9 @@ export default new Vuex.Store({
   actions: {
     setUser({commit}, user){
       commit('setUser', user)
+    },
+    setLoc({commit}, userLoc){
+      commit('setLoc', userLoc)
     },
     logout({commit}){
       commit('logout')

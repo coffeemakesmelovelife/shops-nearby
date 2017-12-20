@@ -1,22 +1,21 @@
 <template>
   <v-container grid-list-md text-xs-center>
   <v-layout row wrap>
-      <v-flex xs12 sm6 md4>
+      <v-flex v-for="shop in shops" xs12 sm6 md4>
         <v-card>
-          <v-card-media src="/static/doc-images/cards/desert.jpg" height="200px">
+          <v-card-media :src="shop.picture" height="150px">
           </v-card-media>
           <v-card-title primary-title>
             <div>
-              <h3 class="headline mb-0">Kangaroo Valley Safari</h3>
-              <div>Located two hours south of Sydney in the <br>Southern Highlands of New South Wales, ...</div>
+              <h3 class="headline mb-0">{{shop.name}}</h3><br>
+              <div><v-icon>email</v-icon> &nbsp; {{shop.email}}</div>
             </div>
           </v-card-title>
           <v-card-actions>
-            <v-btn flat icon color="green">
+            <v-btn v-on:click.native="like(shop._id)" :data-id="shop._id"  flat icon color="green">
               <v-icon>thumb_up</v-icon>
             </v-btn>
-
-            <v-btn flat icon color="red">
+            <v-btn :data-id="shop._id" flat icon color="red">
               <v-icon>thumb_down</v-icon>
             </v-btn>
           </v-card-actions>
@@ -29,15 +28,38 @@
 
 <script>
 import AuthService from '@/services/AuthService'
+import ShopsService from '@/services/ShopsService'
+
   export default {
     data: () => ({
-
-             card_text: 'Lorem ipsum dolor sit amet, brute iriure accusata ne mea. Eos suavitate referrentur ad, te duo agam libris qualisque, utroque quaestio accommodare no qui. Et percipit laboramus usu, no invidunt verterem nominati mel. Dolorem ancillae an mei, ut putant invenire splendide mel, ea nec propriae adipisci. Ignota salutandi accusamus in sed, et per malis fuisset, qui id ludus appareat.'
-
-      }),
+      shops: []
+    }),
     methods: {
+      getLocation(){
 
-
+      },
+      async load(userLocation){
+        console.log(this.$store.state.userLoc);
+        const response = await ShopsService.nearbyShops({userLoc: this.$store.state.userLoc})
+        this.shops = response.data
+      },
+      async like(id){
+        await ShopsService.likeShop({userId: this.$store.state.user, shopId: id})
+      }
+    },
+    beforeMount(){
+      const self = this
+      if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position){
+            self.$store.dispatch('setLoc', {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+          })
+          self.load(self.$store.state.userLoc)
+        });
+      } else {
+          alert("Geolocation is not supported by this browser.")
+      }
     }
   }
 </script>

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import Register from '@/components/Register'
 import NearbyShops from '@/components/NearbyShops'
+import PreferredShops from '@/components/PreferredShops'
 
 Vue.use(Router)
 
@@ -24,14 +25,19 @@ const router = new Router({
       name: 'nearby-shops',
       component: NearbyShops,
       meta: {requiresAuth: true}
+    },
+    {
+      path: '/preferred-shops',
+      name: 'preferred-shops',
+      component: PreferredShops,
+      meta: {requiresAuth: true}
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth) {
+  if (to.meta.requiresAuth && !from.meta.requiresAuth) {
     const isAuth = localStorage.getItem('isLoggedIn')
-    console.log(isAuth);
     if (isAuth == true) {
       next()
     } else {
