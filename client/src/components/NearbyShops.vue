@@ -1,25 +1,28 @@
 <template>
   <v-container grid-list-md text-xs-center>
   <v-layout row wrap>
-      <v-flex v-for="shop in shops" xs12 sm6 md4>
-        <v-card>
+      <v-flex v-for="(shop, key) in shops" xs12 sm6 md4>
+        <transition name="fade">
+        <v-card v-if="shop.show">
           <v-card-media :src="shop.picture" height="150px">
           </v-card-media>
           <v-card-title primary-title>
             <div>
-              <h3 class="headline mb-0">{{shop.name}}</h3><br>
-              <div><v-icon>email</v-icon> &nbsp; {{shop.email}}</div>
+              <h3  class="text-md-left headline mb-0">{{shop.name}}</h3><br>
+              <div class="text-md-left"><v-icon>map</v-icon> &nbsp; {{shop.location.dist}} km away</div>
+              <div class="text-md-left"><v-icon>email</v-icon> &nbsp; {{shop.email}}</div>
             </div>
           </v-card-title>
           <v-card-actions>
-            <v-btn v-on:click.native="like(shop._id)" :data-id="shop._id"  flat icon color="green">
+            <v-btn v-on:click.native="like(shop, key)" flat icon color="green">
               <v-icon>thumb_up</v-icon>
             </v-btn>
-            <v-btn :data-id="shop._id" flat icon color="red">
+            <v-btn v-on:click.native="dislike(shop, key)" flat icon color="red">
               <v-icon>thumb_down</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
+      </transition>
       </v-flex>
     </v-layout>
   </v-container>
@@ -35,35 +38,57 @@ import ShopsService from '@/services/ShopsService'
       shops: []
     }),
     methods: {
-      getLocation(){
-
-      },
-      async load(userLocation){
-        console.log(this.$store.state.userLoc);
-        const response = await ShopsService.nearbyShops({userLoc: this.$store.state.userLoc})
+      async load(){
+        const response = await ShopsService.nearbyShops({userId: this.$store.state.user, userLoc: this.$store.state.userLoc})
+        response.data.map((obj) => {
+            obj.show = true;
+            return obj;
+        })
         this.shops = response.data
       },
-      async like(id){
-        await ShopsService.likeShop({userId: this.$store.state.user, shopId: id})
+      async like(shop, key){
+        shop.show = false
+        var self = this
+        setTimeout(function(){
+          self.shops.splice(key, 1)
+        }, 1000)
+        await ShopsService.likeShop({userId: this.$store.state.user, shopId: shop._id})
+      },
+      async dislike(shop, key){
+        shop.show = false
+        var self = this
+        setTimeout(function(){
+          self.shops.splice(key, 1)
+        }, 1000)
+        await ShopsService.dislikeShop({userId: this.$store.state.user, shopId: shop._id})
       }
     },
     beforeMount(){
-      const self = this
-      if (navigator.geolocation) {
+      if (!this.$store.state.userLoc) {
+        const self = this
+        if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position){
             self.$store.dispatch('setLoc', {
-            lat: position.coords.latitude,
-            lon: position.coords.longitude
-          })
-          self.load(self.$store.state.userLoc)
-        });
-      } else {
+              lat: position.coords.latitude,
+              lon: position.coords.longitude
+            })
+            self.load()
+          });
+        } else {
           alert("Geolocation is not supported by this browser.")
+        }
+      } else {
+        this.load()
       }
     }
   }
 </script>
 
 <style scoped>
-
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0
+}
 </style>

@@ -57,13 +57,20 @@ router.post('/login', passport.authenticate('local'), function(req, res){
 
 // Like a shop
 router.post('/like', function(req, res){
-  console.log(req.body)
+  console.log('LIKED');
   User.findOneAndUpdate({_id: req.body.userId}, {$push: {preferredShops: req.body.shopId}}, function(err, user){
     if(err){
       console.log(err);
     }
-    console.log(user);
+  })
+})
 
+router.post('/dislike', function(req, res){
+  User.findOneAndUpdate({_id: req.body.userId}, {$push: {dislikedShops: {shop: req.body.shopId, createdAt: Date.now()}}}, function(err, user){
+    if(err){
+      console.log(err);
+    }
+    console.log(user);
   })
 })
 
