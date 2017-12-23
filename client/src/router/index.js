@@ -37,10 +37,11 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !from.meta.requiresAuth) {
-    const isAuth = localStorage.getItem('isLoggedIn')
-    if (isAuth == true) {
+    var isAuth = localStorage.getItem('isLoggedIn')
+    // just figured out it returns string and not bool after hours of confusion lol
+    if (isAuth == 'true') {
       next()
-    } else {
+    } else if(isAuth == 'false') {
       next({name: 'login'})
     }
   }
