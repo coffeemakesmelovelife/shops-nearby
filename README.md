@@ -22,6 +22,6 @@ In server
 ## Database
 MongoDB dump file provided by Hidden Founders: https://github.com/hiddenfounders/web-coding-challenge/blob/master/README.md#application-data
 
-databse name is challenge_db and has two tables shops and users
+database name is challenge_db and has two tables shops and users
 
 Go to http://localhost:8080/register and try it out!
