@@ -46,7 +46,7 @@ import ShopsService from '@/services/ShopsService'
     }),
     computed: {
       hasShops: function(){
-        return this.shops.length >= 1
+        return this.shops.length >= 1 || this.pagination.page != this.pagination.pages
       }
     },
     methods: {
@@ -60,7 +60,6 @@ import ShopsService from '@/services/ShopsService'
             obj.show = true;
             return obj;
         })
-        console.log(response.data.shops);
         this.shops = response.data.shops
         this.pagination.page = response.data.page
         this.pagination.pages = response.data.numPages
@@ -72,7 +71,7 @@ import ShopsService from '@/services/ShopsService'
           var self = this
           setTimeout(function(){
             self.shops.splice(key, 1)
-            self.load() // this will repaint the layout and replace the gone element
+            self.load(self.pagination.page) // this will repaint the layout and replace the gone element
           }, 1000)
         }
       }

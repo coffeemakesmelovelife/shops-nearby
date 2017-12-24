@@ -68,7 +68,7 @@ import ShopsService from '@/services/ShopsService'
           var self = this
           setTimeout(function(){
             self.shops.splice(key, 1)
-            self.load() // this will repaint the layout and replace the gone element
+            self.load(self.pagination.page) // this will repaint the layout and replace the gone element
           }, 1000)
         }
       },
@@ -79,7 +79,7 @@ import ShopsService from '@/services/ShopsService'
           var self = this
           setTimeout(function(){
             self.shops.splice(key, 1)
-            self.load() // this will repaint the layout and replace the gone element
+            self.load(self.pagination.page) // this will repaint the layout and replace the gone element
           }, 1000)
         }
       }
