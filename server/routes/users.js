@@ -9,7 +9,7 @@ let User = require('../models/user');
 
 // Register Proccess
 router.post('/register', function(req, res){
-  console.log('received');
+  
   const email = req.body.email;
   const password = req.body.password;
   const password2 = req.body.repassword;
@@ -57,11 +57,11 @@ router.post('/login', passport.authenticate('local'), function(req, res){
 
 // Like a shop
 router.post('/like', function(req, res){
-  console.log('LIKED');
   User.findOneAndUpdate({_id: req.body.userId}, {$push: {preferredShops: req.body.shopId}}, function(err, user){
     if(err){
       console.log(err);
     }
+    res.send('OK')
   })
 })
 
@@ -70,7 +70,7 @@ router.post('/dislike', function(req, res){
     if(err){
       console.log(err);
     }
-    console.log(user);
+    res.send('OK')
   })
 })
 
@@ -81,7 +81,7 @@ router.post('/remove-liked', function(req, res){
     if (err) {
       console.log(err);
     }
-    console.log(user);
+    res.send('OK')
   })
 })
 

@@ -24,7 +24,12 @@
         </v-card>
       </transition>
       </v-flex>
-    </v-layout>
+    </v-layout><br>
+    <v-pagination
+      v-model="pagination.page"
+      :length="pagination.pages"
+      total-visible="9"
+      @input="load"></v-pagination>
   </v-container>
 </template>
 
@@ -35,32 +40,48 @@ import ShopsService from '@/services/ShopsService'
 
   export default {
     data: () => ({
-      shops: []
+      shops: [],
+      pagination: {
+        page: 0,
+        pages: 0
+      }
     }),
     methods: {
-      async load(){
-        const response = await ShopsService.nearbyShops({userId: this.$store.state.user, userLoc: this.$store.state.userLoc})
-        response.data.map((obj) => {
+      async load(page){
+        const response = await ShopsService.nearbyShops({
+           userId: this.$store.state.user,
+           userLoc: this.$store.state.userLoc,
+           page: page
+         })
+        response.data.shops.map((obj) => {
             obj.show = true;
             return obj;
         })
-        this.shops = response.data
+        this.shops = response.data.shops
+        this.pagination.page = response.data.page
+        this.pagination.pages = response.data.numPages
       },
       async like(shop, key){
-        shop.show = false
-        var self = this
-        setTimeout(function(){
-          self.shops.splice(key, 1)
-        }, 1000)
-        await ShopsService.likeShop({userId: this.$store.state.user, shopId: shop._id})
+        const response = await ShopsService.likeShop({userId: this.$store.state.user, shopId: shop._id})
+        if (response.statusText == 'OK') {
+          shop.show = false
+          var self = this
+          setTimeout(function(){
+            self.shops.splice(key, 1)
+            self.load() // this will repaint the layout and replace the gone element
+          }, 1000)
+        }
       },
       async dislike(shop, key){
-        shop.show = false
-        var self = this
-        setTimeout(function(){
-          self.shops.splice(key, 1)
-        }, 1000)
-        await ShopsService.dislikeShop({userId: this.$store.state.user, shopId: shop._id})
+        const response = await ShopsService.dislikeShop({userId: this.$store.state.user, shopId: shop._id})
+        if (response.statusText == 'OK') {
+          shop.show = false
+          var self = this
+          setTimeout(function(){
+            self.shops.splice(key, 1)
+            self.load() // this will repaint the layout and replace the gone element
+          }, 1000)
+        }
       }
     },
     beforeMount(){

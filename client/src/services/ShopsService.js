@@ -1,11 +1,11 @@
 import  Api from '@/services/Api'
 
 export default{
-  nearbyShops(userLocation){
-    return Api().post('dashboard/shops', userLocation)
+  nearbyShops(obj){
+    return Api().post('dashboard/shops', obj)
   },
-  preferredShops(id){
-    return Api().post('dashboard/preferred-shops', id)
+  preferredShops(obj){
+    return Api().post('dashboard/preferred-shops', obj)
   },
   likeShop(id){
     return Api().post('users/like', id)

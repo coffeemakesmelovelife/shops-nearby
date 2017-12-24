@@ -10,25 +10,22 @@ let User = require('../models/user');
 router.post('/shops', function(req, res){
   User.findOne({_id: req.body.userId}, function(err, user){
     var shopsToHide = user.preferredShops
-    var validDislikes = 0
     var expiredDislikes = []
-    console.log(user.dislikedShops.length);
     for(var i = 0; i<user.dislikedShops.length; i++){
-      console.log("wtf");
       if(!dislikeHasExpired(user.dislikedShops[i].createdAt)){
         shopsToHide.push(user.dislikedShops[i].shop)
-        validDislikes++
       } else {
         //removing expired dislikes from the user
         expiredDislikes.push(i)
       }
     }
-    console.log('Liked', user.preferredShops);
-    console.log('Disliked valid', validDislikes);
     Shop.find({_id: {$nin: shopsToHide}}, function(err, shops){
-      console.log(shops.length);
       sortByDistance(shops, [req.body.userLoc.lat, req.body.userLoc.lon])
-      res.send(shops)
+      var page = req.body.page || 1
+      var pageSize = 9
+      var numPages = Math.ceil(shops.length / pageSize)
+      var shopsToServe = shops.slice((page-1)*pageSize, (page-1)*pageSize+pageSize)
+      res.send({shops: shopsToServe, page: page, numPages: numPages})
     })
     //updating the user if needed
     if (expiredDislikes.length>0) {
@@ -48,7 +45,11 @@ router.post('/preferred-shops', function(req, res){
   User.findOne({_id: req.body.userId}, function(err, user){
     Shop.find({_id: user.preferredShops}, function(err, shops){
       sortByDistance(shops, [req.body.userLoc.lat, req.body.userLoc.lon])
-      res.send(shops)
+      var page = req.body.page || 1
+      var pageSize = 9
+      var numPages = Math.ceil(shops.length / pageSize)
+      var shopsToServe = shops.slice((page-1)*pageSize, (page-1)*pageSize+pageSize)
+      res.send({shops: shopsToServe, page: page, numPages: numPages})
     })
   })
 })
@@ -69,8 +70,7 @@ function sortByDistance(shops, usrLoc){
 //Disliked Shop Timespan Control
 function dislikeHasExpired(dateCreated){
   //Converting time since created from milliseconds to minutes
-  console.log(((Date.now() - dateCreated) / 60000));
-  if (((Date.now() - dateCreated) / 60000) > 1) {
+  if (((Date.now() - dateCreated) / 60000) > 120) { //2 hours
     return true
   }
   return false
